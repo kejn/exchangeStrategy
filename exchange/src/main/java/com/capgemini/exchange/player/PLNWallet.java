@@ -1,16 +1,28 @@
 package com.capgemini.exchange.player;
 
+/**
+ * A wallet to store money in PLN. 
+ * @author KNIEMCZY
+ */
 public class PLNWallet {
-	public static final double MONEY_AT_START = 10e3;
+	public static final Double MONEY_AT_START = 10e3;
 
-	private Double value;
+	private Double balance;
 	
 	public PLNWallet() {
-		value = new Double(MONEY_AT_START);
+		balance = new Double(MONEY_AT_START);
 	}
 
-	public Double value() {
-		return value;
+	public Double balance() {
+		return balance;
+	}
+
+	/**
+	 * Substract given <b>amount</b> of money from the wallet balance and spend it on something. 
+	 * @param amount of money to be spent 
+	 */
+	public void spend(Double amount) {
+		balance -= amount;
 	}
 	
 }
