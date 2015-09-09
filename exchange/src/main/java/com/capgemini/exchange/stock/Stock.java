@@ -97,6 +97,16 @@ public class Stock extends Observable {
 	}
 
 	/**
+	 * Used by Investor to choose which Share to buy.
+	 */
+	public static Share chooseShare(String companyName) {
+		if (Stock.getInstance().getCurrentPrices().isEmpty()) {
+			throw new ExceptionInInitializerError("Stock haven't announced any prices yet!");
+		}
+		return instance.prices.get(companyName);
+	}
+
+	/**
 	 * Notifies observers that prices were updated.
 	 */
 	private void changeStateAndNotify() {
@@ -110,10 +120,9 @@ public class Stock extends Observable {
 	 */
 	public void updatePricesFromFile() {
 		int prevSize = prices.size();
-		for (int added=0; added < pricesFromFile.size(); ++added) {
+		for (int added = 0; added < pricesFromFile.size(); ++added) {
 			Share share = pricesFromFile.get(0);
 			if ((prevSize == 0) && (added >= prevSize) && (prices.get(share) != null)) {
-				System.out.println(added);
 				break;
 			}
 			pricesFromFile.remove(0);

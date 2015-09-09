@@ -13,6 +13,10 @@ public class MoneyWallet {
 		balance = new Double(MONEY_AT_START);
 	}
 
+	public MoneyWallet(Double balance) {
+		this.balance = balance;
+	}
+
 	public Double balance() {
 		return balance;
 	}
@@ -21,8 +25,14 @@ public class MoneyWallet {
 	 * Subtract given <b>amount</b> of money from the wallet balance to spend it on something. 
 	 * @param amount of money to be spent 
 	 */
-	public void spend(Double amount) {
+	public Double spend(Double amount) {
 		balance -= amount;
+		return amount;
+	}
+
+	public Double earn(Double amount) {
+		balance += amount;
+		return amount;
 	}
 	
 }
