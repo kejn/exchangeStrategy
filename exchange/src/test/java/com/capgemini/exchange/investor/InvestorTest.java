@@ -1,9 +1,11 @@
-package com.capgemini.exchange.player;
+package com.capgemini.exchange.investor;
 
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Before;
 import org.junit.Test;
+
+import com.capgemini.exchange.share.Share;
 
 public class InvestorTest {
 	private Investor investor;
@@ -17,7 +19,7 @@ public class InvestorTest {
 	@Test
 	public void testInvestorHas10kPLNAtStart() {
 		// then
-		assertEquals(PLNWallet.MONEY_AT_START, investor.getPLNWallet().balance());
+		assertEquals(MoneyWallet.MONEY_AT_START, investor.getPLNWallet().balance());
 	}
 
 	@Test

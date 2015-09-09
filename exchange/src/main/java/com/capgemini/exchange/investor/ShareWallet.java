@@ -1,11 +1,14 @@
-package com.capgemini.exchange.player;
+package com.capgemini.exchange.investor;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.capgemini.exchange.share.Share;
+
 /**
  * A wallet to store shares.
+ * 
  * @author KNIEMCZY
  */
 public class ShareWallet {
@@ -33,8 +36,8 @@ public class ShareWallet {
 	}
 
 	/**
-	 * Adds new share in amount of <b>units</b> to {@link #shares} or increments
-	 * units of a share if it already existed in ShareWallet.
+	 * Adds new share in amount of <b>units</b> to {@link #shares} or increases
+	 * one by <b>units</b> if it already existed in ShareWallet.
 	 * 
 	 * @param share
 	 *            to be added to the {@link #shares}.
