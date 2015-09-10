@@ -1,11 +1,16 @@
 package com.capgemini.exchange.investor;
 
+import java.util.Map.Entry;
 import java.util.Observable;
 import java.util.Observer;
 
 import com.capgemini.exchange.broker.BrokersOffice;
+import com.capgemini.exchange.investor.strategy.RandomStrategy;
+import com.capgemini.exchange.investor.strategy.Strategy;
 import com.capgemini.exchange.share.Share;
 import com.capgemini.exchange.stock.Stock;
+import com.capgemini.exchange.wallet.MoneyWallet;
+import com.capgemini.exchange.wallet.ShareWallet;
 
 /**
  * Player who invests in shares.
@@ -17,20 +22,18 @@ public class Investor extends Observable implements Observer {
 	private MoneyWallet moneyWallet;
 	private ShareWallet shareWallet;
 	private BrokersOffice office;
+	private Strategy strategy;
 
-	public Investor() {
-		moneyWallet = new MoneyWallet();
-		shareWallet = new ShareWallet();
-		Stock.getInstance().addObserver(this);
-		office = null;
-	}
-
+	/**
+	 * By default investor uses RandomStrategy
+	 */
 	public Investor(BrokersOffice office) {
-		moneyWallet = new MoneyWallet();
-		shareWallet = new ShareWallet();
-		Stock.getInstance().addObserver(this);
+		this.moneyWallet = new MoneyWallet();
+		this.shareWallet = new ShareWallet();
+		this.strategy = new RandomStrategy();
 		this.office = office;
-		addObserver(office);
+		this.addObserver(this.office);
+		Stock.getInstance().addObserver(this);
 	}
 
 	public MoneyWallet getPLNWallet() {
@@ -46,32 +49,60 @@ public class Investor extends Observable implements Observer {
 	}
 
 	public void setOffice(BrokersOffice office) {
+		this.deleteObserver(this.office);
 		this.office = office;
+		this.addObserver(this.office);
 	}
 
 	public void buy(Share share, int units) throws NullPointerException, IllegalArgumentException {
-		if(office == null) {
+		if (office == null) {
 			throw new NullPointerException("Office field has not been assigned!");
 		}
-		if(Stock.getInstance().getCurrentPrices().get(share.getCompanyName()) == null) {
-			throw new IllegalArgumentException("Stock has not announced such share.");
+		if (Stock.getInstance().getCurrentPrices().get(share) == null) {
+			throw new IllegalArgumentException("Stock has not announced such share: " + share.toString());
 		}
 		Double amount = share.getUnitPrice() * units;
-		changeStateAndNotify(amount);
+		changeStateAndNotify(amount, true);
 		shareWallet.put(share, units);
 	}
-	
+
+	public void sell(Share share, int units) {
+		if (office == null) {
+			throw new NullPointerException("Office field has not been assigned!");
+		}
+		if (shareWallet.get(share) == null) {
+			throw new IllegalArgumentException("Investor doesn't have such share in the shareWallet.");
+		}
+		Double amount = share.getUnitPrice() * units;
+		changeStateAndNotify(amount, false);
+		shareWallet.remove(share, units);
+	}
+
 	/**
-	 * Notifies observers that shares were bought.
+	 * Notifies observers that shares were bought or sold.
+	 * @param amount money to earn/spend.
+	 * @param buying if is <code>true</code> money is spent, otherwise money is earned
 	 */
-	private void changeStateAndNotify(Double amount) {
+	private void changeStateAndNotify(Double amount, boolean buying) {
 		setChanged();
-		notifyObservers(moneyWallet.spend(amount));
+		if(buying) {
+			notifyObservers(moneyWallet.spend(amount));
+		} else {
+			notifyObservers(moneyWallet.earn(amount));
+		}
 	}
 
 	@Override
-	public void update(Observable observable, Object notifyArgument) {
-		// TODO: choose which Share to buy next | STRATEGY dependent
+	public void update(Observable stock, Object prices) {
+		if(stock instanceof Stock && prices instanceof ShareWallet) {
+			Entry<Share, Integer> toBuy = strategy.chooseShareToBuy((ShareWallet)prices);
+			Entry<Share, Integer> toSell = strategy.chooseShareToSell(shareWallet);
+
+			buy(toBuy.getKey(), toBuy.getValue());
+			if(toSell != null) {
+				sell(toSell.getKey(), toSell.getValue());
+			}
+		}
 	}
 
 }

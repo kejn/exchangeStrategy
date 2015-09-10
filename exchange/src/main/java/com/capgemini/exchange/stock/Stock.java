@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Observable;
 
 import com.capgemini.exchange.share.Share;
-import com.capgemini.exchange.share.ShareMap;
+import com.capgemini.exchange.wallet.ShareWallet;
 
 /**
  * Single instance of stock exchange which notifies Investors about share price
@@ -31,15 +31,15 @@ public class Stock extends Observable {
 	/**
 	 * Shares' prices announced recently by Stock
 	 */
-	private ShareMap prices;
+	private ShareWallet prices;
 
 	/**
 	 * List of prices loaded from file.
 	 */
-	private List<Share> pricesFromFile;
+	private List<Share> pricesFromFile = null;
 
 	private Stock() {
-		prices = new ShareMap();
+		prices = new ShareWallet();
 		loadPricesFromFile();
 	}
 
@@ -48,6 +48,10 @@ public class Stock extends Observable {
 	 * {@link #pricesFromFile} list and sorts it by {@link Share#date} field.
 	 */
 	private void loadPricesFromFile() {
+		if(pricesFromFile != null) {
+			System.err.println("Prices have already been loaded");
+			return;
+		}
 		pricesFromFile = new ArrayList<>();
 		BufferedReader fileReader = null;
 		try {
@@ -85,13 +89,13 @@ public class Stock extends Observable {
 		return instance;
 	}
 
-	public ShareMap getCurrentPrices() {
-		return prices.copy();
+	public ShareWallet getCurrentPrices() {
+		return new ShareWallet(prices);
 	}
 
 	public void updatePrices(Share... shares) {
 		for (Share share : shares) {
-			prices.put(share);
+			prices.put(share, 1);
 		}
 		changeStateAndNotify();
 	}
@@ -99,19 +103,19 @@ public class Stock extends Observable {
 	/**
 	 * Used by Investor to choose which Share to buy.
 	 */
-	public static Share chooseShare(String companyName) {
-		if (Stock.getInstance().getCurrentPrices().isEmpty()) {
+	public static Share chooseShare(String companyName) throws ExceptionInInitializerError {
+		if (getInstance().getCurrentPrices().getShares().isEmpty()) {
 			throw new ExceptionInInitializerError("Stock haven't announced any prices yet!");
 		}
-		return instance.prices.get(companyName);
+		return getInstance().prices.get(new Share(companyName)).getKey();
 	}
 
 	/**
 	 * Notifies observers that prices were updated.
 	 */
-	private void changeStateAndNotify() {
+	public void changeStateAndNotify() {
 		setChanged();
-		notifyObservers();
+		notifyObservers(getCurrentPrices());
 	}
 
 	/**
@@ -119,23 +123,23 @@ public class Stock extends Observable {
 	 * method!
 	 */
 	public void updatePricesFromFile() {
-		int prevSize = prices.size();
+		int prevSize = prices.getShares().size();
 		for (int added = 0; added < pricesFromFile.size(); ++added) {
 			Share share = pricesFromFile.get(0);
 			if ((prevSize == 0) && (added >= prevSize) && (prices.get(share) != null)) {
 				break;
 			}
 			pricesFromFile.remove(0);
-			prices.put(share);
+			prices.put(share, 1);
 		}
 		changeStateAndNotify();
 	}
-
+	
 	/**
-	 * Clears list of registered prices.
+	 * Clears list of registered prices in ShareWallet.
 	 */
-	public void reset() {
-		prices.clear();
+	public void clearShareWallet() {
+		prices.getShares().clear();
 	}
 
 }

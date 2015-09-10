@@ -6,30 +6,32 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.capgemini.exchange.investor.Investor;
-import com.capgemini.exchange.investor.MoneyWallet;
 import com.capgemini.exchange.share.Share;
 import com.capgemini.exchange.stock.Stock;
+import com.capgemini.exchange.wallet.MoneyWallet;
 
 public class BrokersOfficeTest {
 
 	@Before
 	public void setUp() {
-		Stock.getInstance().reset();
+		Stock.getInstance().clearShareWallet();
 		Stock.getInstance().updatePricesFromFile();
+		System.out.println(Stock.getInstance().getCurrentPrices());
 	}
 
 	@Test
 	public void testBrokersOfficeEarnCommision() {
 		// given
-		BrokersOffice office = new BrokersOffice(0.0);
+		BrokersOffice office = new BrokersOffice();
 		Investor investor = new Investor(office);
 		final MoneyWallet moneyWallet = office.getMoneyWallet();
 		final Share share = Stock.chooseShare("TPSA");
 		final int units = 100;
-		final Double expected = new Double(BrokersOffice.COMMISION * share.getUnitPrice() * units); 
 		// when
+		assertNotNull(share);
 		investor.buy(share, units);
 		// then
+		final Double expected = new Double(BrokersOffice.COMMISION_RATE * share.getUnitPrice() * units); 
 		assertEquals(expected, moneyWallet.balance());
 	}
 

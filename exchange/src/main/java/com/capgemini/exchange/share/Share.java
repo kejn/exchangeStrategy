@@ -40,6 +40,15 @@ public class Share {
 	}
 
 	/**
+	 * Used for choosing share to sell/buy.
+	 */
+	public Share(String companyName) {
+		this.unitPrize = 0.0;
+		this.companyName = companyName;
+		this.date = LocalDate.now();
+	}
+
+	/**
 	 * Used for observing current situation at the market.
 	 */
 	public Share(Double unitPrize, String companyName) {
@@ -94,7 +103,7 @@ public class Share {
 
 	@Override
 	public boolean equals(Object obj) {
-		if ((obj instanceof Share) && (((Share) obj).toString()).equals(toString())) {
+		if ((obj instanceof Share) && (((Share) obj).companyName).equals(companyName)) {
 			return true;
 		}
 		return false;

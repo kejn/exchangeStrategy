@@ -8,44 +8,56 @@ import java.util.Observable;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 import com.capgemini.exchange.investor.Investor;
 import com.capgemini.exchange.share.Share;
-import com.capgemini.exchange.share.ShareMap;
+import com.capgemini.exchange.wallet.ShareWallet;
 
 public class StockTest {
 	
-	private Stock stock = Stock.getInstance();
+	private Stock spyStock;
+	private final static Share[] sharePrices = { Share.parse("PKOBP,20130102,37.35"),
+			Share.parse("KGHM,20130102,193.10"), Share.parse("PGNIG,20130102,5.26"), Share.parse("TPSA,20130102,12.16"),
+			Share.parse("JSW,20130102,94.60") };
+	private final Answer<Void> answer = new Answer<Void>() {
+		@Override
+		public Void answer(InvocationOnMock invocation) throws Throwable {
+			spyStock.updatePrices(sharePrices);
+			return null;
+		}
+	};
 
 	@Before
 	public void setUp() {
-		stock.reset();
+		spyStock = Mockito.spy(Stock.getInstance());
+		Mockito.doAnswer(answer).when(spyStock).updatePricesFromFile();
+		Mockito.doAnswer(answer).when(spyStock).updatePrices(Mockito.<Share>anyObject());
 	}
 	
 	@Test
 	public void testStockLoadedShareDailyPrizes() {
 		// given
-		ShareMap prices = stock.getCurrentPrices();
+		ShareWallet prices = spyStock.getCurrentPrices();
 		// when
-		stock.updatePrices(new Share(1.0));
-		ShareMap result = stock.getCurrentPrices();
+		spyStock.updatePrices(new Share(1.0));
+		ShareWallet result = spyStock.getCurrentPrices();
 		// then
-		assertFalse(result.isEmpty());
-		assertNotEquals(prices, result);
-		System.out.println(result);
+		assertFalse(result.getShares().isEmpty());
+		assertNotEquals(prices.getShares(), result.getShares());
 	}
 
 	@Test
-	public void testStockLoadedShareDailyPrizesFromDefaultFile() {
+	public void testStockLoadedShareDailyPrizesFromFile() {
 		// given
-		ShareMap prices = stock.getCurrentPrices();
+		ShareWallet prices = spyStock.getCurrentPrices();
 		// when
-		stock.updatePricesFromFile();
-		ShareMap result = stock.getCurrentPrices();
+		spyStock.updatePricesFromFile();
+		ShareWallet result = spyStock.getCurrentPrices();
 		// then
-		assertFalse(result.isEmpty());
+		assertFalse(result.getShares().isEmpty());
 		assertNotEquals(prices, result);
-		System.out.println(result);
 	}
 	
 	@Test
@@ -53,25 +65,21 @@ public class StockTest {
 		// given
 		Investor investor = Mockito.mock(Investor.class);
 		// when
-		stock.addObserver(investor);
-		stock.updatePrices(new Share(1.0));
-		ShareMap result = stock.getCurrentPrices();
+		spyStock.addObserver(investor);
+		spyStock.updatePrices(new Share(1.0));
 		// then
 		Mockito.verify(investor).update(Mockito.<Observable>any(), Mockito.anyObject());
-		System.out.println(result);
 	}
 
 	@Test
-	public void testInvestorWasNotifiedAboutPriceUpdateFromDefaultFile() {
+	public void testInvestorWasNotifiedAboutPriceUpdateFromFile() {
 		// given
 		Investor investor = Mockito.mock(Investor.class);
 		// when
-		stock.addObserver(investor);
-		stock.updatePricesFromFile();
-		ShareMap result = stock.getCurrentPrices();
+		spyStock.addObserver(investor);
+		spyStock.updatePricesFromFile();
 		// then
 		Mockito.verify(investor).update(Mockito.<Observable>any(), Mockito.anyObject());
-		System.out.println(result);
 	}
 	
 	

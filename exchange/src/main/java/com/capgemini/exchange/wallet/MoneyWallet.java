@@ -1,4 +1,4 @@
-package com.capgemini.exchange.investor;
+package com.capgemini.exchange.wallet;
 
 /**
  * A wallet to store money. 
@@ -22,7 +22,7 @@ public class MoneyWallet {
 	}
 
 	/**
-	 * Subtract given <b>amount</b> of money from the wallet balance to spend it on something. 
+	 * Subtract given <b>amount</b> of money from the wallet {@link #balance}. 
 	 * @param amount of money to be spent 
 	 */
 	public Double spend(Double amount) {
@@ -30,6 +30,10 @@ public class MoneyWallet {
 		return amount;
 	}
 
+	/**
+	 * Add given <b>amount</b> of money to the wallet {@link #balance}. 
+	 * @param amount of money to be spent 
+	 */
 	public Double earn(Double amount) {
 		balance += amount;
 		return amount;
