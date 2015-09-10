@@ -30,7 +30,7 @@ public class InvestorTest {
 	@Test
 	public void testInvestorHas10kPLNAtStart() {
 		// then
-		assertEquals(MoneyWallet.MONEY_AT_START, investor.getPLNWallet().balance());
+		assertEquals(MoneyWallet.MONEY_AT_START, investor.getMoneyWallet().balance());
 	}
 
 	@Test
@@ -50,7 +50,7 @@ public class InvestorTest {
 		investor.buy(share1, 1);
 		investor.buy(share2, 2);
 		// then
-		assertEquals(new Double(9800), investor.getPLNWallet().balance());
+		assertEquals(new Double(9800), investor.getMoneyWallet().balance());
 		assertEquals(new Integer(3), investor.getShareWallet().getAllSharesCount());
 	}
 
@@ -65,7 +65,7 @@ public class InvestorTest {
 		investor.buy(share1, 1);
 		investor.buy(share2, 2);
 		// then
-		assertEquals(new Double(9800), investor.getPLNWallet().balance());
+		assertEquals(new Double(9800), investor.getMoneyWallet().balance());
 		assertEquals(new Integer(3), investor.getShareWallet().getAllSharesCount());
 		assertEquals(new Integer(2), investor.getShareWallet().getAllUniqueSharesCount());
 	}

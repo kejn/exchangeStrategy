@@ -15,8 +15,11 @@ public class BrokersOfficeTest {
 	@Before
 	public void setUp() {
 		Stock.getInstance().clearShareWallet();
-		Stock.getInstance().updatePricesFromFile();
-		System.out.println(Stock.getInstance().getCurrentPrices());
+		try {
+			Stock.getInstance().updatePricesFromFile();
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
 	}
 
 	@Test

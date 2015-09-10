@@ -36,7 +36,7 @@ public class Investor extends Observable implements Observer {
 		Stock.getInstance().addObserver(this);
 	}
 
-	public MoneyWallet getPLNWallet() {
+	public MoneyWallet getMoneyWallet() {
 		return moneyWallet;
 	}
 

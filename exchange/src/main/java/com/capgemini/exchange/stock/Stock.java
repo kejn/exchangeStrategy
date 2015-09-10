@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Observable;
 
 import com.capgemini.exchange.share.Share;
@@ -121,18 +122,39 @@ public class Stock extends Observable {
 	/**
 	 * IMPORTANT: sort {@link #pricesFromFile} before any invocation of this
 	 * method!
+	 * @throws Exception if {@link #pricesFromFile} is empty.
 	 */
-	public void updatePricesFromFile() {
-		int prevSize = prices.getShares().size();
-		for (int added = 0; added < pricesFromFile.size(); ++added) {
+	public void updatePricesFromFile() throws Exception {
+		if(pricesFromFile.isEmpty()) {
+			throw new Exception("No more prices to load from file.");
+		}
+		ShareWallet oldPrices = new ShareWallet(prices);
+		clearShareWallet();
+
+		// load new prices
+		while(!pricesFromFile.isEmpty()) {
 			Share share = pricesFromFile.get(0);
-			if ((prevSize == 0) && (added >= prevSize) && (prices.get(share) != null)) {
+			if (priceExists(share)) {
 				break;
 			}
 			pricesFromFile.remove(0);
 			prices.put(share, 1);
 		}
+		
+		// if some prices were not updated put their old values back to prices
+		for (Entry<Share,Integer> entry : oldPrices.getShares().entrySet()) {
+			if(!priceExists(entry.getKey())) {
+				prices.put(entry.getKey(), 1);
+			}
+		}
 		changeStateAndNotify();
+	}
+	
+	private boolean priceExists(Share nextShareToBeAdded) {
+		if(prices.get(nextShareToBeAdded) != null) {
+			return true;
+		}
+		return false;
 	}
 	
 	/**

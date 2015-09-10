@@ -1,7 +1,6 @@
 package com.capgemini.exchange.stock;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.*;
 
 import java.util.Observable;
 
@@ -32,7 +31,11 @@ public class StockTest {
 	@Before
 	public void setUp() {
 		spyStock = Mockito.spy(Stock.getInstance());
-		Mockito.doAnswer(answer).when(spyStock).updatePricesFromFile();
+		try {
+			Mockito.doAnswer(answer).when(spyStock).updatePricesFromFile();
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
 		Mockito.doAnswer(answer).when(spyStock).updatePrices(Mockito.<Share>anyObject());
 	}
 	
@@ -53,7 +56,11 @@ public class StockTest {
 		// given
 		ShareWallet prices = spyStock.getCurrentPrices();
 		// when
-		spyStock.updatePricesFromFile();
+		try {
+			spyStock.updatePricesFromFile();
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
 		ShareWallet result = spyStock.getCurrentPrices();
 		// then
 		assertFalse(result.getShares().isEmpty());
@@ -77,7 +84,11 @@ public class StockTest {
 		Investor investor = Mockito.mock(Investor.class);
 		// when
 		spyStock.addObserver(investor);
-		spyStock.updatePricesFromFile();
+		try {
+			spyStock.updatePricesFromFile();
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
 		// then
 		Mockito.verify(investor).update(Mockito.<Observable>any(), Mockito.anyObject());
 	}
