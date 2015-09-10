@@ -1,8 +1,6 @@
 package com.capgemini.exchange.strategy;
 
-import static org.junit.Assert.*;
-
-import java.util.Observable;
+import static org.junit.Assert.assertFalse;
 
 import org.junit.Before;
 import org.junit.Test;

@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.Observable;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -28,12 +27,6 @@ public class InvestorTest {
 		Stock.getInstance().addObserver(spyInvestor);
 	}
 
-//	@After
-//	public void tearDown() {
-//		Stock.getInstance().deleteObserver(spyInvestor);
-//		Stock.getInstance().addObserver(investor);
-//	}
-	
 	@Test
 	public void testInvestorHas10kPLNAtStart() {
 		// then
