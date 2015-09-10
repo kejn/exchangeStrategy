@@ -98,11 +98,17 @@ public class Investor extends Observable implements Observer {
 			Entry<Share, Integer> toBuy = strategy.chooseShareToBuy((ShareWallet)prices);
 			Entry<Share, Integer> toSell = strategy.chooseShareToSell(shareWallet);
 
-			buy(toBuy.getKey(), toBuy.getValue());
+			if(haveEnoughMoney(toBuy.getKey().getUnitPrice(), toBuy.getValue())) {
+				buy(toBuy.getKey(), toBuy.getValue());
+			}
 			if(toSell != null) {
 				sell(toSell.getKey(), toSell.getValue());
 			}
 		}
+	}
+	
+	private boolean haveEnoughMoney(Double shareUnitPrice, Integer units) {
+		return moneyWallet.balance() >= shareUnitPrice * units;
 	}
 
 }
