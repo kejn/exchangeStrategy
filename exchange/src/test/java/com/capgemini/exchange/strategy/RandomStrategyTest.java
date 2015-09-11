@@ -36,7 +36,7 @@ public class RandomStrategyTest {
 		stock.updatePrices(sharePrices); // here investor only buys
 		// then
 		assertFalse(spyInvestor.getShareWallet().getShares().isEmpty());
-		Mockito.verify(spyInvestor, Mockito.times(1)).buy(Mockito.any(Share.class), Mockito.anyInt());
+		Mockito.verify(spyInvestor, Mockito.atLeastOnce()).buy(Mockito.any(Share.class), Mockito.anyInt());
 	}
 
 	@Test
@@ -45,8 +45,8 @@ public class RandomStrategyTest {
 		stock.updatePrices(sharePrices); // here investor only buys
 		stock.updatePrices(sharePrices); // here investor buys and sells
 		// then
-		Mockito.verify(spyInvestor, Mockito.times(2)).buy(Mockito.any(Share.class), Mockito.anyInt());
-		Mockito.verify(spyInvestor, Mockito.times(1)).sell(Mockito.any(Share.class), Mockito.anyInt());
+		Mockito.verify(spyInvestor, Mockito.atLeastOnce()).buy(Mockito.any(Share.class), Mockito.anyInt());
+		Mockito.verify(spyInvestor, Mockito.atLeastOnce()).sell(Mockito.any(Share.class), Mockito.anyInt());
 	}
 
 }

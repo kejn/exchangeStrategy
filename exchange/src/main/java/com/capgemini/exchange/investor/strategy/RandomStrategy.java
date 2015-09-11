@@ -9,34 +9,41 @@ import com.capgemini.exchange.share.Share;
 import com.capgemini.exchange.wallet.ShareWallet;
 
 public class RandomStrategy implements Strategy {
-
-	private int entryIndex;
-	
+	/**
+	 * @param maxIndex
+	 * @return random int from 0 (including) to <b>maxIndex</b> (excluding)
+	 */
 	private int randomIndex(int maxIndex) {
 		return new Long(Math.round(Math.random() * maxIndex)).intValue();
 	}
 
-	private Entry<String, Pair<Share,Integer>> chooseRandomly(ShareWallet fromWallet) {
-		Set<Entry<String, Pair<Share,Integer>>> set = fromWallet.getShares().entrySet();
-		Iterator<Entry<String, Pair<Share,Integer>>> iter = set.iterator();
-		entryIndex = randomIndex(set.size());
+	private ShareWallet chooseRandomly(ShareWallet fromWallet) {
+		ShareWallet result = new ShareWallet(fromWallet);
+		int numberOfEntriesToReturn = randomIndex(result.getShares().size() - 1) + 1;
+		System.out.print(numberOfEntriesToReturn + " <");
 
-		Entry<String, Pair<Share,Integer>> entry = null;
-		while(entryIndex >= 0 && iter.hasNext()) {
-			entry = iter.next();
-			--entryIndex;
+		while (result.getShares().size() > numberOfEntriesToReturn) {
+			int indexToRemove = randomIndex(result.getShares().size());
+			Iterator<Entry<String, Pair<Share, Integer>>> iter = result.getShares().entrySet().iterator();
+			Entry<String, Pair<Share, Integer>> entry = null;
+			while (indexToRemove-- >= 0 && iter.hasNext()) {
+				entry = iter.next();
+			}
+			result.remove(entry.getValue().first, 1);
+			System.out.print(indexToRemove + ",");
+
 		}
-		return entry;
+		System.out.println(">");
+		return result;
 	}
-	
+
 	@Override
-	public Entry<String, Pair<Share,Integer>> chooseShareToBuy(ShareWallet fromWallet) {
+	public ShareWallet chooseShareToBuy(ShareWallet fromWallet) {
 		return chooseRandomly(fromWallet);
 	}
-	
 
 	@Override
-	public Entry<String, Pair<Share,Integer>> chooseShareToSell(ShareWallet fromWallet) {
+	public ShareWallet chooseShareToSell(ShareWallet fromWallet) {
 		return chooseRandomly(fromWallet);
 	}
 

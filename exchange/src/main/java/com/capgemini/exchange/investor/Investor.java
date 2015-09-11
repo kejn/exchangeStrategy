@@ -103,14 +103,24 @@ public class Investor extends Observable implements Observer {
 	public void update(Observable stock, Object prices) {
 		if (stock instanceof Stock && prices instanceof ShareWallet) {
 			updateShareWallet((ShareWallet) prices);
-			Entry<String, Pair<Share, Integer>> toBuy = strategy.chooseShareToBuy((ShareWallet) prices);
-			Entry<String, Pair<Share, Integer>> toSell = strategy.chooseShareToSell(shareWallet);
+			ShareWallet toBuy = strategy.chooseShareToBuy((ShareWallet) prices);
+			ShareWallet toSell = strategy.chooseShareToSell(shareWallet);
 
-			if (toBuy != null && haveEnoughMoney(toBuy.getValue().first.getUnitPrice(), toBuy.getValue().second)) {
-				buy(toBuy.getValue().first, toBuy.getValue().second);
+			if (!toBuy.getShares().isEmpty()) {
+				toBuy.getShares().entrySet().forEach(entry -> {
+					Share share = entry.getValue().first;
+					Integer units = entry.getValue().second;
+					if(haveEnoughMoney(share.getUnitPrice(), units)){
+						buy(share, units);
+					}
+				});
 			}
-			if (toSell != null) {
-				sell(toSell.getValue().first, toSell.getValue().second);
+			if (!toSell.getShares().isEmpty()) {
+				toSell.getShares().entrySet().forEach(entry -> {
+					Share share = entry.getValue().first;
+					Integer units = entry.getValue().second;
+					sell(share, Math.min(units, this.shareWallet.get(share).getValue().second));
+				});
 			}
 			System.out.println("\n\n\n");
 		}
@@ -134,9 +144,12 @@ public class Investor extends Observable implements Observer {
 	}
 
 	public void sellAll() {
-		for (Entry<String, Pair<Share, Integer>> toSell : shareWallet.getShares().entrySet()) {
-			sell(toSell.getValue().first, toSell.getValue().second);
-		}
+		ShareWallet shareWallet = new ShareWallet(this.shareWallet);
+		shareWallet.getShares().entrySet().forEach(entry -> {
+			Share share = entry.getValue().first;
+			Integer units = entry.getValue().second;
+			sell(share, units);
+		});
 	}
 
 }

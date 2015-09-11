@@ -38,7 +38,7 @@ public class ShareWallet {
 	 */
 	public Integer getAllSharesCount() {
 		Integer count = 0;
-		for (Entry<String, Pair<Share,Integer>> entry : shares.entrySet()) {
+		for (Entry<String, Pair<Share, Integer>> entry : shares.entrySet()) {
 			count += entry.getValue().second;
 		}
 		return count;
@@ -74,7 +74,7 @@ public class ShareWallet {
 		Entry<String, Pair<Share, Integer>> result = null;
 
 		for (Entry<String, Pair<Share, Integer>> entry : shares.entrySet()) {
-			if (entry.getKey().equals(share)) {
+			if (entry.getKey().equals(share.getCompanyName())) {
 				result = entry;
 				break;
 			}
@@ -93,7 +93,8 @@ public class ShareWallet {
 	public void remove(Share share, int units) throws IllegalArgumentException {
 		Pair<Share, Integer> alreadyHad = shares.get(share.getCompanyName());
 		if (alreadyHad == null || alreadyHad.second.intValue() < units) {
-			throw new IllegalArgumentException("No such share in shares or not enough units of given share in shares.");
+			throw new IllegalArgumentException("No such share in shares or not enough units of given share in shares."
+					+ alreadyHad==null?"":" Wanted to remove " + units + ", but had only " + alreadyHad.second);
 		}
 		units = alreadyHad.second.intValue() - units;
 		if (units == 0) {

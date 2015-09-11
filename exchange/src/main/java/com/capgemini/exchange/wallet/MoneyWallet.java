@@ -1,5 +1,7 @@
 package com.capgemini.exchange.wallet;
 
+import java.util.Locale;
+
 /**
  * A wallet to store money. 
  * @author KNIEMCZY
@@ -18,7 +20,7 @@ public class MoneyWallet {
 	}
 
 	public Double balance() {
-		return Math.round(balance * 100) * 0.01;
+		return Double.parseDouble(String.format(Locale.US, "%.2f", balance));
 	}
 
 	/**
