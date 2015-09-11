@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.capgemini.exchange.share.Pair;
 import com.capgemini.exchange.share.Share;
 
 /**
@@ -18,7 +19,7 @@ public class ShareWallet {
 	 * Map of shares in the ShareWallet Key is the company name. Value is count
 	 * of shares of that specific company
 	 */
-	private Map<Share, Integer> shares;
+	private Map<String, Pair<Share, Integer>> shares;
 
 	public ShareWallet() {
 		shares = new HashMap<>();
@@ -28,7 +29,7 @@ public class ShareWallet {
 		shares = new HashMap<>(other.shares);
 	}
 
-	public Map<Share, Integer> getShares() {
+	public Map<String, Pair<Share, Integer>> getShares() {
 		return shares;
 	}
 
@@ -37,8 +38,8 @@ public class ShareWallet {
 	 */
 	public Integer getAllSharesCount() {
 		Integer count = 0;
-		for (Entry<Share, Integer> entry : shares.entrySet()) {
-			count += entry.getValue();
+		for (Entry<String, Pair<Share,Integer>> entry : shares.entrySet()) {
+			count += entry.getValue().second;
 		}
 		return count;
 	}
@@ -53,11 +54,11 @@ public class ShareWallet {
 	 *            of the share to be added.
 	 */
 	public void put(Share share, int units) {
-		Integer alreadyHad = shares.get(share);
+		Pair<Share, Integer> alreadyHad = shares.get(share.getCompanyName());
 		if (alreadyHad != null) {
-			units += alreadyHad.intValue();
+			units += alreadyHad.second.intValue();
 		}
-		shares.put(share, units);
+		shares.put(share.getCompanyName(), new Pair<Share, Integer>(share, units));
 	}
 
 	/**
@@ -69,10 +70,10 @@ public class ShareWallet {
 	 * @return fully described share from shares if found or <b>null</b>
 	 *         otherwise.
 	 */
-	public Entry<Share, Integer> get(Share share) {
-		Entry<Share, Integer> result = null;
+	public Entry<String, Pair<Share, Integer>> get(Share share) {
+		Entry<String, Pair<Share, Integer>> result = null;
 
-		for (Entry<Share, Integer> entry : shares.entrySet()) {
+		for (Entry<String, Pair<Share, Integer>> entry : shares.entrySet()) {
 			if (entry.getKey().equals(share)) {
 				result = entry;
 				break;
@@ -84,19 +85,21 @@ public class ShareWallet {
 	/**
 	 * Removes given units of share form shares.
 	 * 
-	 * @param share to be removed (specified by {@link Share#companyName})
-	 * @param units of specified share to be removed.
+	 * @param share
+	 *            to be removed (specified by {@link Share#companyName})
+	 * @param units
+	 *            of specified share to be removed.
 	 */
 	public void remove(Share share, int units) throws IllegalArgumentException {
-		Integer alreadyHad = shares.get(share);
-		if (alreadyHad == null || alreadyHad.intValue() < units) {
+		Pair<Share, Integer> alreadyHad = shares.get(share.getCompanyName());
+		if (alreadyHad == null || alreadyHad.second.intValue() < units) {
 			throw new IllegalArgumentException("No such share in shares or not enough units of given share in shares.");
 		}
-		units = alreadyHad.intValue() - units;
+		units = alreadyHad.second.intValue() - units;
 		if (units == 0) {
-			shares.remove(share);
+			shares.remove(share.getCompanyName());
 		} else {
-			shares.put(share, units);
+			shares.put(share.getCompanyName(), new Pair<Share, Integer>(share, units));
 		}
 	}
 

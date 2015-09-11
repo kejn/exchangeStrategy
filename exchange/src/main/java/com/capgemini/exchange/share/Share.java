@@ -23,10 +23,10 @@ public class Share {
 	/**
 	 * Prize per unit of this Share.
 	 */
-	private Double unitPrize;
-
+	private Double unitPrice;
+	
 	/**
-	 * Date when the {@link #unitPrize} was updated.
+	 * Date when the {@link #unitPrice} was updated.
 	 */
 	private LocalDate date;
 
@@ -34,7 +34,7 @@ public class Share {
 	 * Used for undefined shares.
 	 */
 	public Share(Double unitPrize) {
-		this.unitPrize = unitPrize;
+		this.unitPrice = unitPrize;
 		this.companyName = UNDEFINED;
 		this.date = LocalDate.now();
 	}
@@ -43,7 +43,7 @@ public class Share {
 	 * Used for choosing share to sell/buy.
 	 */
 	public Share(String companyName) {
-		this.unitPrize = 0.0;
+		this.unitPrice = 0.0;
 		this.companyName = companyName;
 		this.date = LocalDate.now();
 	}
@@ -52,7 +52,7 @@ public class Share {
 	 * Used for observing current situation at the market.
 	 */
 	public Share(Double unitPrize, String companyName) {
-		this.unitPrize = unitPrize;
+		this.unitPrice = unitPrize;
 		this.companyName = companyName;
 		this.date = LocalDate.now();
 	}
@@ -61,13 +61,19 @@ public class Share {
 	 * Used for enterprise usage like predicting future share unit prices.
 	 */
 	public Share(Double unitPrize, String companyName, LocalDate date) {
-		this.unitPrize = unitPrize;
+		this.unitPrice = unitPrize;
 		this.companyName = companyName;
 		this.date = date;
 	}
 
+	public Share(Share other) {
+		this.unitPrice = other.getUnitPrice();
+		this.companyName = other.getCompanyName();
+		this.date = other.getDate();
+	}
+
 	public Double getUnitPrice() {
-		return unitPrize;
+		return unitPrice;
 	}
 
 	public String getCompanyName() {
@@ -120,7 +126,7 @@ public class Share {
 		int month = date.getMonthValue();
 		int day = date.getDayOfMonth();
 
-		return companyName + String.format(Locale.US, ",%4d%02d%02d,%.2f", year, month, day, unitPrize);
+		return companyName + String.format(Locale.US, ",%4d%02d%02d,%.2f", year, month, day, unitPrice);
 	}
 
 }

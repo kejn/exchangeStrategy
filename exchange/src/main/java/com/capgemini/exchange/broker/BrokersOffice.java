@@ -37,13 +37,16 @@ public class BrokersOffice implements Observer {
 	}
 
 	public void earn(Double amount) {
-		moneyWallet.earn(amount * COMMISION_RATE);
+		moneyWallet.earn(amount);
 	}
 
 	@Override
 	public void update(Observable investor, Object amount) {
 		if (investor instanceof Investor && amount instanceof Double) {
-			earn((Double) amount);
+			Investor inv = (Investor) investor;
+			Double amountSpent = (Double) amount;
+			Double commisionToEarn = Math.floor(inv.getMoneyWallet().spend(amountSpent * COMMISION_RATE) * 100) / 100;
+			earn(commisionToEarn);
 		}
 	}
 

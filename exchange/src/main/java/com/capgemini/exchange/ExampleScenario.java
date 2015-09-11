@@ -16,6 +16,7 @@ public class ExampleScenario {
 			}
 		} catch (Exception e) {
 			System.out.println(e.getMessage() + " (after " + numberOfUpdates + " updates)");
+			investor.sellAll();
 			System.out.println("Investor's money wallet balance: " + investor.getMoneyWallet().balance());
 		}
 	}

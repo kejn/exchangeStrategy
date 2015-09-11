@@ -11,10 +11,13 @@ import com.capgemini.exchange.stock.Stock;
 import com.capgemini.exchange.wallet.MoneyWallet;
 
 public class BrokersOfficeTest {
+	
+	private final Share share = Share.parse("TPSA,20130102,12.16");
 
 	@Before
 	public void setUp() {
 		Stock.getInstance().clearShareWallet();
+		Stock.getInstance().updatePrices(share);
 		try {
 			Stock.getInstance().updatePricesFromFile();
 		} catch (Exception e) {
@@ -28,14 +31,14 @@ public class BrokersOfficeTest {
 		BrokersOffice office = new BrokersOffice();
 		Investor investor = new Investor(office);
 		final MoneyWallet moneyWallet = office.getMoneyWallet();
-		final Share share = Stock.chooseShare("TPSA");
-		final int units = 100;
+		final int unitsToBuy = 100;
+		final Double unitPrice = share.getUnitPrice();
+		final Double expectedBalance = moneyWallet.balance() + BrokersOffice.COMMISION_RATE * unitPrice * unitsToBuy; 
 		// when
 		assertNotNull(share);
-		investor.buy(share, units);
+		investor.buy(share, unitsToBuy);
 		// then
-		final Double expected = new Double(BrokersOffice.COMMISION_RATE * share.getUnitPrice() * units); 
-		assertEquals(expected, moneyWallet.balance());
+		assertEquals(expectedBalance, moneyWallet.balance());
 	}
 
 }

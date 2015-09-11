@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Observable;
 
+import com.capgemini.exchange.share.Pair;
 import com.capgemini.exchange.share.Share;
 import com.capgemini.exchange.wallet.ShareWallet;
 
@@ -95,9 +96,12 @@ public class Stock extends Observable {
 	}
 
 	public void updatePrices(Share... shares) {
+		ShareWallet oldPrices = new ShareWallet(prices);
+		clearShareWallet();
 		for (Share share : shares) {
 			prices.put(share, 1);
 		}
+		retrieveNotUpdatedPrices(oldPrices);
 		changeStateAndNotify();
 	}
 
@@ -108,7 +112,7 @@ public class Stock extends Observable {
 		if (getInstance().getCurrentPrices().getShares().isEmpty()) {
 			throw new ExceptionInInitializerError("Stock haven't announced any prices yet!");
 		}
-		return getInstance().prices.get(new Share(companyName)).getKey();
+		return getInstance().prices.getShares().get(companyName).first;
 	}
 
 	/**
@@ -141,20 +145,26 @@ public class Stock extends Observable {
 			prices.put(share, 1);
 		}
 		
-		// if some prices were not updated put their old values back to prices
-		for (Entry<Share,Integer> entry : oldPrices.getShares().entrySet()) {
-			if(!priceExists(entry.getKey())) {
-				prices.put(entry.getKey(), 1);
-			}
-		}
+		retrieveNotUpdatedPrices(oldPrices);
 		changeStateAndNotify();
 	}
 	
 	private boolean priceExists(Share nextShareToBeAdded) {
-		if(prices.get(nextShareToBeAdded) != null) {
+		if(prices.getShares().containsKey(nextShareToBeAdded.getCompanyName())) {
 			return true;
 		}
 		return false;
+	}
+
+	// if some prices were not updated put their old values back to prices
+	private void retrieveNotUpdatedPrices(ShareWallet oldPrices) {
+		for (Entry<String, Pair<Share,Integer>> entry : oldPrices.getShares().entrySet()) {
+			Share share = entry.getValue().first;
+			if(!priceExists(share)) {
+				System.out.println("put back old price!");
+				prices.put(share, 1);
+			}
+		}
 	}
 	
 	/**
