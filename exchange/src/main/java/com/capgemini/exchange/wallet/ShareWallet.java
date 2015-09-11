@@ -26,7 +26,10 @@ public class ShareWallet {
 	}
 
 	public ShareWallet(ShareWallet other) {
-		shares = new HashMap<>(other.shares);
+		shares = new HashMap<>();
+		other.shares.values().forEach(pair -> {
+			shares.put(pair.first.getCompanyName(), pair);
+		});
 	}
 
 	public Map<String, Pair<Share, Integer>> getShares() {

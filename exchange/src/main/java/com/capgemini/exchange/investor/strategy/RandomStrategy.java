@@ -13,7 +13,7 @@ public class RandomStrategy implements Strategy {
 	 * @return random int from 0 (including) to <b>maxIndex</b> (excluding)
 	 */
 	private int randomIndex(int maxIndex) {
-		return new Long(Math.round(Math.random() * maxIndex)).intValue();
+		return new Double(Math.random() * maxIndex).intValue();
 	}
 
 	private ShareWallet chooseRandomly(ShareWallet fromWallet) {
@@ -25,11 +25,12 @@ public class RandomStrategy implements Strategy {
 			int indexToRemove = randomIndex(result.getShares().size());
 			Iterator<Entry<String, Pair<Share, Integer>>> iter = result.getShares().entrySet().iterator();
 			Entry<String, Pair<Share, Integer>> entry = null;
-			while (indexToRemove-- >= 0 && iter.hasNext()) {
+			System.out.print(indexToRemove + ",");
+			while (indexToRemove >= 0 && iter.hasNext()) {
 				entry = iter.next();
+				--indexToRemove;
 			}
 			result.remove(entry.getValue().first, 1);
-			System.out.print(indexToRemove + ",");
 
 		}
 		System.out.println(">");
