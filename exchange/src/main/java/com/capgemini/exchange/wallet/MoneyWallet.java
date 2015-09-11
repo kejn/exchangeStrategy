@@ -18,7 +18,7 @@ public class MoneyWallet {
 	}
 
 	public Double balance() {
-		return balance;
+		return Math.round(balance * 100) * 0.01;
 	}
 
 	/**

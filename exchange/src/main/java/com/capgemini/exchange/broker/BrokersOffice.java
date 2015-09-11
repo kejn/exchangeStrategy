@@ -45,7 +45,7 @@ public class BrokersOffice implements Observer {
 		if (investor instanceof Investor && amount instanceof Double) {
 			Investor inv = (Investor) investor;
 			Double amountSpent = (Double) amount;
-			Double commisionToEarn = Math.floor(inv.getMoneyWallet().spend(amountSpent * COMMISION_RATE) * 100) / 100;
+			Double commisionToEarn = inv.getMoneyWallet().spend(amountSpent * COMMISION_RATE);
 			earn(commisionToEarn);
 		}
 	}
