@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import java.util.Observable;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -37,6 +38,12 @@ public class StockTest {
 			fail(e.getMessage());
 		}
 		Mockito.doAnswer(answer).when(spyStock).updatePrices(Mockito.<Share>anyObject());
+	}
+	
+	@After
+	public void tearDown() {
+		Stock.getInstance().clearShareWallet();
+		Stock.getInstance().deleteObservers();
 	}
 	
 	@Test

@@ -37,6 +37,15 @@ public class Investor extends Observable implements Observer {
 		Stock.getInstance().addObserver(this);
 	}
 
+	public Investor(Strategy strategy, BrokersOffice office) {
+		this.moneyWallet = new MoneyWallet();
+		this.shareWallet = new ShareWallet();
+		this.strategy = strategy;
+		this.office = office;
+		this.addObserver(this.office);
+		Stock.getInstance().addObserver(this);
+	}
+
 	public MoneyWallet getMoneyWallet() {
 		return moneyWallet;
 	}
@@ -53,6 +62,14 @@ public class Investor extends Observable implements Observer {
 		this.deleteObserver(this.office);
 		this.office = office;
 		this.addObserver(this.office);
+	}
+	
+	public void setStrategy(Strategy strategy) {
+		this.strategy = strategy;
+	}
+	
+	public Strategy getStrategy() {
+		return strategy;
 	}
 
 	public void buy(Share share, int units) throws NullPointerException, IllegalArgumentException {

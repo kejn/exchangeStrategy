@@ -2,7 +2,6 @@ package com.capgemini.exchange.investor.strategy;
 
 import java.util.Iterator;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import com.capgemini.exchange.share.Pair;
 import com.capgemini.exchange.share.Share;
